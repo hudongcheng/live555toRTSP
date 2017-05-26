@@ -3,6 +3,11 @@
  *
  *  This program can be used and distributed without restrictions.
  *
+ *   Compile and run test:
+ *   $ gcc -o capture capture.c
+ *   $ ./capture
+ *   $ x264 --demuxer lavf --input-csp yuyv422 --input-res 640x480 -o capture.mp4 capture.yuv
+ *   
  *      This program is provided with the V4L2 API
  * see https://linuxtv.org/docs.php for more information
  */
@@ -70,7 +75,8 @@ static int xioctl(int fh, int request, void *arg)
 static void process_image(const void *p, int size)
 {
     static int count = 0;
-        if (count++ < 1)
+    printf("%d", count++);
+        /*if (count++ < 1)*/
                 fwrite(p, 1, size, capture_fp);
 
         fflush(stderr);
