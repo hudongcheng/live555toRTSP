@@ -7,7 +7,7 @@
 
 void compress_begin(Encoder *en, int width, int height) {
     
-    int m_frameRate=25;//帧率
+    int m_frameRate=30;//帧率
     int m_bitRate=1000;//码率
     en->param = (x264_param_t *) malloc(sizeof(x264_param_t));
     en->picture = (x264_picture_t *) malloc(sizeof(x264_picture_t));
@@ -28,9 +28,9 @@ void compress_begin(Encoder *en, int width, int height) {
         return;
     }
 
-    x264_picture_alloc(en->picture, X264_CSP_I420, en->param->i_width,
+    x264_picture_alloc(en->picture, X264_CSP_I422, en->param->i_width,
             en->param->i_height);
-    en->picture->img.i_csp = X264_CSP_I420;
+    en->picture->img.i_csp = X264_CSP_I422;
     en->picture->img.i_plane = 3;
 
 }
