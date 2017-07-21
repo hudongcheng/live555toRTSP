@@ -6,7 +6,9 @@
  *   Compile and run test:
  *   $ gcc -o capture capture.c
  *   $ ./capture
+ *   $ ffplay -v info -f rawvideo -pixel_format yuyv422 -video_size 640x480 capture.yuv
  *   $ x264 --demuxer lavf --input-csp yuyv422 --input-res 640x480 -o capture.mp4 capture.yuv
+ *   $ ffplay capture.mp4
  *   
  *      This program is provided with the V4L2 API
  * see https://linuxtv.org/docs.php for more information
@@ -522,16 +524,23 @@ static void init_device(void)
                 /* Preserve original settings as set by v4l2-ctl for example */
                 if (-1 == xioctl(fd, VIDIOC_G_FMT, &fmt))
                         errno_exit("VIDIOC_G_FMT");
+
+                printf("width = %d, height = %d, pixelformat = %d, bytesperline = %d, sizeimage = %d, colorspace = %d\n", 
+                    fmt.fmt.pix.width, fmt.fmt.pix.height, fmt.fmt.pix.pixelformat,
+                    fmt.fmt.pix.bytesperline, fmt.fmt.pix.sizeimage, fmt.fmt.pix.colorspace);
+
+                printf("V4L2_PIX_FMT_YUV420 = %d, V4L2_PIX_FMT_YUYV = %d\n", V4L2_PIX_FMT_YUV420, V4L2_PIX_FMT_YUYV);
         }
 
         /* Buggy driver paranoia. */
+        /*
         min = fmt.fmt.pix.width * 2;
         if (fmt.fmt.pix.bytesperline < min)
                 fmt.fmt.pix.bytesperline = min;
         min = fmt.fmt.pix.bytesperline * fmt.fmt.pix.height;
         if (fmt.fmt.pix.sizeimage < min)
                 fmt.fmt.pix.sizeimage = min;
-
+*/
         switch (io) {
         case IO_METHOD_READ:
                 init_read(fmt.fmt.pix.sizeimage);
@@ -585,14 +594,14 @@ static void usage(FILE *fp, int argc, char **argv)
                  "Usage: %s [options]\\n\\n"
                  "Version 1.3\\n"
                  "Options:\\n"
-                 "-d | --device name   Video device name [%s]n"
-                 "-h | --help          Print this messagen"
-                 "-m | --mmap          Use memory mapped buffers [default]n"
-                 "-r | --read          Use read() callsn"
-                 "-u | --userp         Use application allocated buffersn"
-                 "-o | --output        Outputs stream to stdoutn"
-                 "-f | --format        Force format to 640x480 YUYVn"
-                 "-c | --count         Number of frames to grab [%i]n"
+                 "-d | --device name   Video device name [%s]\n"
+                 "-h | --help          Print this message\n"
+                 "-m | --mmap          Use memory mapped buffers [default]\n"
+                 "-r | --read          Use read() calls\n"
+                 "-u | --userp         Use application allocated buffers\n"
+                 "-o | --output        Outputs stream to stdout\n"
+                 "-f | --format        Force format to 640x480 YUYV\n"
+                 "-c | --count         Number of frames to grab [%i]\n"
                  "",
                  argv[0], dev_name, frame_count);
 }
